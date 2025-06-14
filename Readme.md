@@ -1,17 +1,17 @@
 # DATA-ENGINEERING  
-# Proyek : Analisis Dampak Tingkat HDI dan GDP terhadap Pertumbuhan dan Dinamika Populasi di Berbagai Negara
+# Proyek : Pengaruh Luas Kebakaran Hutan dan Lahan terhadap Peningkatan Emisi Karbon (CO₂e) di Indonesia
 
 ## Deskripsi Proyek  
-Proyek ini bertujuan untuk mengembangkan pipeline ETL (Extract, Transform, Load) untuk menganalisis korelasi antara Indeks Pembangunan Manusia (HDI), Produk Domestik Bruto (GDP), dengan tren angka bunuh diri secara global. Data yang relevan dikumpulkan dari berbagai sumber, kemudian dibersihkan, diintegrasikan, dan disiapkan untuk analisis lebih lanjut serta untuk melatih model machine learning. Hasil akhir dari proyek ini adalah sebuah dataset yang siap pakai sebagai dasar untuk pengambilan kebijakan berbasis data terkait kesehatan mental dan pembangunan sosial-ekonomi. 
+Project ini di kembangkan untuk mengidentifikasi pola hubungan antara luas kebakaran hutan dan lahan dengan peningkatan emisi karbon (CO₂e) di Indonesia. Dengan Tujuan memahami kontribusi kebakaran hutan terhadap emisi karbon dan menentukan tingkat emisi berdasarkan luas lahan, luas kebakaran, dan jumlah emisi karbon. Selain itu, Project ini juga menganalisis perubahan luas kebakaran hutan dan emisi karbon per provinsi serta mengidentifikasi wilayah dengan tingkat emisi tinggi akibat kebakaran hutan beserta pola perubahannya setiap tahun
 
 ---
 
 ## Manfaat Data / Use Case  
-- **Tujuan Proyek:** Menyediakan data terintegrasi yang menghubungkan indikator sosial-ekonomi (HDI, GDP) dengan data demografi terkait kasus bunuh diri dan pertumbuhan populasi.  
+- **Tujuan Proyek:** Menyediakan data terintegrasi yang menggambarkan pola hubungan antara luas kebakaran hutan dan lahan dengan peningkatan emisi karbon (CO₂e) di Indonesia.
 - **Manfaat:**  
-  - Menjelaskan hubungan antara pembangunan dan dinamika populasi.  
-  - Menjadi dasar untuk model prediktif guna memproyeksikan tren populasi di masa depan berdasarkan variabel sosial-ekonomi.  
-  - Menyediakan insight dan rekomendasi berbasis data untuk pemerintah, lembaga kesehatan mental, dan organisasi perencanaan pembangunan.
+  - Menyediakan sumber data yang telah melalui proses validasi dan transformasi, sehingga siap digunakan untuk studi lanjutan.  
+  - Membuka peluang bagi pengembang teknologi prediktif, seperti model machine learning untuk mitigasi bencana 
+  - Hasil ETL proyek ini mendukung dashboard visualisasi sebagai upaya meningkatkan efisiensi analisis data lingkungan
 
 ---
 
@@ -26,20 +26,20 @@ Dataset yang telah dibersihkan dan distandardisasi digunakan untuk melatih model
 # Pipeline
 ## Extract ( Pengambilan Data ) 
 - **Sumber Data:**  
-  - Mental Health – Kaggle  
-    https://www.kaggle.com/datasets/imtkaggleteam/mental-health  
-  - Suicide Rates – Kaggle  
-    https://www.kaggle.com/datasets/omkargowda/suicide-rates-overview-1985-to-2021  
-  - Gross Domestic Product - Our World in Data
-    https://ourworldindata.org/grapher/gdp-per-capita-worldbank?tab=table
-  - Human Development Index – Our World in Data  
-    https://ourworldindata.org/grapher/human-development-index?time=latest
+  - Luas Kebakaran Hutan dan Lahan  – SISKLHK
+    (https://statistik.menlhk.go.id/sisklhkX/data_statistik/ppi/table7_6) 
+  - Emisi Karbon (Ton CO2e) Akibat Karhutla – Kaggle  
+    (https://statistik.menlhk.go.id/sisklhkX/data_statistik/ppi/table7_8) 
+  - Data Luas Tutupan Lahan - Google Earth Engine
+    - Dataset: `ESA/WorldCover/v100`  
+    - Administrasi Provinsi: `FAO/GAUL/2015/level1`
 
 - **Metode Pengambilan:**  
-  - File CSV diunduh dari URL menggunakan wget.  
-  - File dari Kaggle diunduh menggunakan kaggle datasets download.  
-  - Penanganan file ZIP yang diekstrak secara otomatis.  
-
+**GeoSpatial (Google Earth Engine):**  
+    - Menggunakan Earth Engine API untuk menghitung luas tutupan lahan berdasarkan kelas seperti hutan, pertanian, semak belukar, dll.  
+    - Proses melibatkan reduksi histogram klasifikasi citra dan konversi hasil ke hektar untuk masing-masing provinsi.  
+  - **Web Scraping (Statistik KLHK):**  
+    - Data emisi dan kebakaran diambil dari tabel HTML publik menggunakan `pandas.read_html()` dengan kata kunci “Provinsi”.  
 ---
 
 ## Transform ( Pembersihan & Transformasi )   
@@ -90,11 +90,8 @@ Dataset yang telah dibersihkan dan distandardisasi digunakan untuk melatih model
 
 - **Link Projek:**  
   - ETL Pipeline:  
-    https://colab.research.google.com/drive/1Q6Ute3fIaVB_-GHH8ViZu3tbAU3BE0rA?usp=sharing
   - Machine Learning:  
-    https://colab.research.google.com/drive/1jsvbjMqI8EXPhcuA_PQ3xgNSGhmaowEB?usp=sharing
   - Looker
-    https://lookerstudio.google.com/reporting/b444a019-af01-4a6c-b313-9178138a915a
 
 ---
 
