@@ -1,6 +1,19 @@
 # DATA-ENGINEERING  
 # Proyek : Pengaruh Luas Kebakaran Hutan dan Lahan terhadap Peningkatan Emisi Karbon (CO₂e) di Indonesia
 
+---
+
+## Kontributor
+
+| Nama Lengkap                       | NIM         | Peran                |
+|------------------------------------|-------------|----------------------|
+| Brandewa Pandu A                   | 234311034   | Data Engineer        |
+| Hanan Labib R                      | 234311041   | Data Analyst         |
+| Muhammad Hasanuddin                | 234311045   | Data Engineer        |
+| Rara Alviana G                     | 234311050   | Project Manager      |
+
+---
+
 ## Deskripsi Proyek  
 Project ini di kembangkan untuk mengidentifikasi pola hubungan antara luas kebakaran hutan dan lahan dengan peningkatan emisi karbon (CO₂e) di Indonesia. Dengan Tujuan memahami kontribusi kebakaran hutan terhadap emisi karbon dan menentukan tingkat emisi berdasarkan luas lahan, luas kebakaran, dan jumlah emisi karbon. Selain itu, Project ini juga menganalisis perubahan luas kebakaran hutan dan emisi karbon per provinsi serta mengidentifikasi wilayah dengan tingkat emisi tinggi akibat kebakaran hutan beserta pola perubahannya setiap tahun
 
@@ -16,10 +29,10 @@ Project ini di kembangkan untuk mengidentifikasi pola hubungan antara luas kebak
 ---
 
 ## Serving Analisis  
-Data hasil ETL disimpan dalam format Postgresql yang bersih dan terstruktur. Data ini siap digunakan untuk analisis eksploratif serta visualisasi tren menggunakan perangkat lunak seperti Looker untuk menemukan pola dan korelasi.
+Data hasil ETL disimpan dalam format PostgreSQL yang terstruktur dan dapat diakses untuk eksplorasi lanjutan menggunakan Google Colab atau visualisasi interaktif melalui Looker Studio. Penyimpanan ini memungkinkan analisis korelasi, distribusi wilayah emisi tinggi, dan pembuatan dashboard lingkungan.
 
 ## Serving Machine Learning  
-Dataset yang telah dibersihkan dan distandardisasi digunakan untuk melatih model machine learning. Secara spesifik, berbagai model regresi dievaluasi menggunakan pustaka pycaret untuk menemukan model terbaik dalam memprediksi jumlah pertumbuhan populasi. Model Huber Regressor terpilih sebagai model dengan performa terbaik untuk tugas prediksi ini.
+Dataset bersih digunakan untuk membangun model klasifikasi tingkat emisi karbon menggunakan beberapa algoritma machine learning. Proyek ini mengimplementasikan K-Means Clustering untuk pengelompokan wilayah, serta menggunakan PCA untuk reduksi dimensi dan visualisasi. Model juga divalidasi dengan metode DBSCAN dan Gaussian Mixture Model.
 
 ---
 
@@ -38,18 +51,19 @@ Dataset yang telah dibersihkan dan distandardisasi digunakan untuk melatih model
 **GeoSpatial (Google Earth Engine):**  
     - Menggunakan Earth Engine API untuk menghitung luas tutupan lahan berdasarkan kelas seperti hutan, pertanian, semak belukar, dll.  
     - Proses melibatkan reduksi histogram klasifikasi citra dan konversi hasil ke hektar untuk masing-masing provinsi.  
-  - **Web Scraping (Statistik KLHK):**  
+**Web Scraping (Statistik KLHK):**  
     - Data emisi dan kebakaran diambil dari tabel HTML publik menggunakan `pandas.read_html()` dengan kata kunci “Provinsi”.  
 ---
 
 ## Transform ( Pembersihan & Transformasi )   
 - **Pembersihan:**  
-  - Menghapus baris duplikat dan baris kosong menggunakan metode seperti dropna().  
-  - Mengganti nama kolom agar seragam untuk proses penggabungan (contoh: country menjadi Entity dan year menjadi Year).
+  - Menghapus kolom dan baris kosong (`dropna()`), serta mengisi missing value seperti `STATUS` → "Member State".
+  - Normalisasi nama kolom agar seragam (contoh: `2018_x` → `Jumlah_Emisi_2018`)
 
 - **Transformasi:**  
-  - Menggabungkan beberapa dataset (dfHDI, dfMentalHealth, dfKematian, dfGDP) menjadi satu DataFrame tunggal berdasarkan kolom Year dan Entity.  
-  - Data mentah disimpan sebelum transformasi dan data yang telah bersih disimpan sebagai output akhir.
+  - Menggabungkan ketiga dataset (`df_emisi`, `df_kebakaran`, `df_geo`) berdasarkan kolom `Provinsi`.
+  - Menghitung `Total_Emisi` dan menambahkan label `Kategori_Emisi` berdasarkan clustering.
+  - Pipeline modular memungkinkan efisiensi dan reusabilitas dalam pengolahan data.
 
 ---
 
@@ -73,33 +87,26 @@ Dataset yang telah dibersihkan dan distandardisasi digunakan untuk melatih model
   -  Kode diorganisir secara sekuensial di dalam notebook Google Colab.
 
 - **Tools yang Digunakan:**  
-  - Python 3.x  
-  - Library: `pandas`, `numpy`, `wget`, `kaggle`, `os`, `json`, `logging`, `scikit-learn`, `matplotlib`.
-  - Google Colab digunakan sebagai environment untuk pemrosesan dan eksperimen.
+  - Python 3.x
+  - Library: `pandas`, `numpy`, `sqlalchemy`, `matplotlib`, `seaborn`, `sklearn`, `scipy`
+  - Platform: Google Colab
 
 ---
 
 ## Kode Program  
 - **Struktur Kode:**  
-  - Kode untuk ETL dan Machine Learning dipisahkan dalam dua notebook yang berbeda.
-  - Penamaan variabel dan fungsi bersifat deskriptif (contoh: dfHDI, df_agg, transformasi).
+  - Terdapat 2 notebook: satu untuk ETL, satu untuk Machine Learning.
+  - Nama variabel dan fungsi deskriptif: `df_merge`, `transform_data()`, `Total_Emisi`, dll.
     
 - **Machine Learning:**  
-  - Menggunakan pycaret untuk melakukan setup environment, membandingkan beberapa model regresi, dan memilih model terbaik (huber) untuk prediksi Populasi.  
-  - Model dievaluasi menggunakan berbagai plot seperti plot residual dan kesalahan prediksi.  
+  - Model utama: K-Means Clustering (3 kategori: rendah, sedang, tinggi)
+  - Visualisasi PCA untuk melihat distribusi cluster
+  - Model pembanding: DBSCAN, **Gaussian Mixture Model
+  - Evaluasi dengan heatmap korelasi dan scatter plot hasil PCA
 
-- **Link Projek:**  
-  - ETL Pipeline:  
-  - Machine Learning:  
-  - Looker
+- **Link Projek:** 
+  - ETL Pipeline: [https://colab.research.google.com/drive/1QXWeLagmfu2rTsXHOVhHGJySGZJXSZC9?usp=sharing](https://colab.research.google.com/drive/1YwSpaGzl-FJRWDLpzKLOP7Lya2XAyNgs?usp=sharing)
+  - Machine Learning: [https://colab.research.google.com/drive/1ZOKVncLMsOHem02JAikUDV3UPLFzNGO7?usp=sharing](https://colab.research.google.com/drive/1ZOKVncLMsOHem02JAikUDV3UPLFzNGO7?usp=sharing)
+  - Looker :[(https://lookerstudio.google.com/reporting/e72b27de-4529-491c-9849-a7408707a18a)](https://lookerstudio.google.com/reporting/e72b27de-4529-491c-9849-a7408707a18a)
 
 ---
-
-## Kontributor
-
-| Nama Lengkap                       | NIM         | Peran                |
-|------------------------------------|-------------|----------------------|
-| Brandewa Pandu A                   | 234311034   | Data Engineer        |
-| Hanan Labib R                      | 234311041   | Data Analyst         |
-| Muhammad Hasanuddin                | 234311045   | Data Engineer        |
-| Rara Alviana G                     | 234311050   | Project Manager      |
